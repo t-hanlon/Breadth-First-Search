@@ -1,0 +1,188 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+struct Node {
+    Node *next;
+    int id;
+};
+
+/**
+ * Simple queue that stores nodes and returns node ids.
+ */
+class Queue {
+    private:
+        Node *front;
+        Node *back;
+        int size;
+    
+    public:
+        void Push(int n) {
+            Node *add;
+            
+            add = new Node;
+            add->id = n;
+            if (!front) {
+                front = add;
+                size = 0;
+            }
+            else {
+                back->next = add;
+            }
+            back = add;
+            size++;
+        }
+    
+        int Pop() {
+            int ret;
+            if (front) {
+                ret = front->id;
+                front = front->next;
+                size--;
+            }
+            else
+                ret = -1;
+            return ret;
+        }
+    
+        int Empty() {
+            return size == 0;
+        }
+};
+
+/**
+ * A basic LinkedList.
+ */
+class List {
+    private:
+        Node *adj;
+        int size;
+    
+    public:    
+        
+        List () {
+            size = 0;
+        }
+        
+        /* Inserts a node to the front of the list */
+        void Insert(int id) {
+            Node *edge = new Node;
+            
+            edge->next = adj;
+            edge->id = id;
+            adj = edge;
+            size++;
+        }
+    
+        /* Returns the adjacency list as an int array */
+        int *getList() {
+            Node *cur;
+            int *ret;
+            int pos;
+            
+            if (!size)
+                return 0;
+            cur = adj;
+            ret = new int[size];
+            pos = 0;
+            
+            while(pos < size) {
+                ret[pos] = cur->id;
+                pos++;
+                cur = cur->next;
+            }
+            return ret;
+        }
+    
+        int getSize() {
+            return size;
+        }
+};
+
+/**
+ * A BFS that uses an integer array of distances as the vertice list
+ * and an adjacency list for edges.
+ *
+ * Output: The distance array will be filled in with the distance of 
+ * each vertex from the vertex with id _start_
+ */
+int *BFS(int N, List *adj_list, int start) {
+    int *distance;
+    int cur, check;
+    int c_dist;     //the distance of children vertices from the current vertex
+    Queue to_visit;
+    int *adj;
+    int adj_size;
+    
+    distance = new int[N+1];
+    for (int j = 1; j <= N; j++) {distance[j] = -1;}
+    distance[start] = 0;
+    
+    to_visit.Push(start);
+    
+    while (!to_visit.Empty()) {
+        cur = to_visit.Pop();
+        c_dist = distance[cur] + 6;
+        adj = adj_list[cur].getList();
+        adj_size = adj_list[cur].getSize();
+        for (int i = 0; i < adj_size; i++){
+            check = adj[i];
+            //if we haven't visited check before this point
+            if (distance[check] == -1) {
+                distance[check] = c_dist;
+                to_visit.Push(check);
+            }
+        }
+        //Memory maintenance
+        delete adj;
+    }
+    return distance;
+}
+
+int main() {
+    int T;      //number of test cases
+    int N;      //number of vertices
+    int M;      //number of edges
+    int S;      //the starting vertex
+    int u, v;   //represents nodes in edge (u,v)
+    
+    int *distance;    //Contains an int from -1 to 1. -1 = not visited, 0 = discovered
+    int cur_dist;
+    List *adj_list;
+    
+    cin >> T;
+    for (int i = 0; i < T; i++) {
+        cin >> N >> M;
+        cur_dist = 0;
+        adj_list = new List[N+1];
+
+        for (int i = 0; i < M; i++) {
+            cin >> u >> v;
+            adj_list[u].Insert(v);
+            adj_list[v].Insert(u);
+        }
+        
+        cin >> S;
+
+        distance = BFS(N, adj_list, S);
+        
+        for (int i = 1; i < (N-1); i++) {
+            if (i != S)
+                printf("%d ",distance[i]);
+        }
+        if (N == S)
+            printf("%d",distance[N-1]);
+        else if (N-1 == S)
+            printf("%d",distance[N]);
+        else
+            printf("%d %d",distance[N-1],distance[N]);
+            
+        delete distance;
+        delete adj_list;
+        cout << endl;
+    }
+    return 0;
+}
