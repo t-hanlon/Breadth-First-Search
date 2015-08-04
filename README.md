@@ -21,7 +21,7 @@ The last line has an integer S, denoting the starting position.
 Constraints
 1≤T≤10
 2≤N≤1000
-1≤M≤N×(N−1)2
+1≤M≤(N×(N−1)) / 2
 1≤x,y,S≤N
 
 While performing the traversal, if there are edges between the same pair of nodes with different weights, the last one (most recent) is to be considered as the only edge between them. [this doesn't actually affect the algorithm because edges all have the same length, so I'm not sure why it's included in the problem description]
