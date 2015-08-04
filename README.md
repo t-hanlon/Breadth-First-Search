@@ -30,4 +30,4 @@ Output Format
 
 For each of T test cases, print a single line consisting of N−1 space separated integers, denoting the shortest distances of the N-1 nodes from starting position S.
 
-For unreachble nodes, print −1.
+For unreachable nodes, print −1.
